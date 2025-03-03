@@ -6,38 +6,39 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-import NoteList from "@/components/NoteList";
-import AddNoteModal from "@/components/AddNoteModal";
-import noteService from "@/services/noteService";
+import { Note } from "@/types";
 import { useAuth } from "@/contexts/authContext";
+import NoteList from "@/components/NoteList";
+import noteService from "@/services/noteService";
+import AddNoteModal from "@/components/AddNoteModal";
 
 export default function NotesScreen() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [newNote, setNewNote] = useState("");
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace("auth");
+      router.replace("/auth");
     }
   }, [user, authLoading]);
 
   useEffect(() => {
-    if (user) {
-      fetchNotes();
+    if (user?.$id) {
+      fetchNotes(user?.$id);
     }
   }, [user]);
 
-  async function fetchNotes() {
+  async function fetchNotes(userId: string) {
     setLoading(true);
-    const response = await noteService.getNotes(user?.$id);
-    if (response.error) {
+    const response = await noteService.getNotes(userId);
+    if ("error" in response) {
       Alert.alert("Error", response.error);
       setError(response.error);
     } else {
@@ -52,8 +53,8 @@ export default function NotesScreen() {
       return;
     }
 
-    const response = await noteService.addNote(user.$id, newNote);
-    if (response?.error) {
+    const response = await noteService.addNote(user?.$id!, newNote);
+    if ("error" in response) {
       Alert.alert("Error", response.error);
     } else {
       setNotes((prev) => [...prev, response.data]);
@@ -63,14 +64,14 @@ export default function NotesScreen() {
     setModalVisible(false);
   }
 
-  async function editNote(id, newText) {
+  async function editNote(id: string, newText: string) {
     if (!newText.trim()) {
       Alert.alert("Error", "Note text cannot be empty");
       return;
     }
 
     const response = await noteService.updateNote(id, newText);
-    if (response?.error) {
+    if ("error" in response) {
       Alert.alert("Error", response.error);
     } else {
       setNotes((prev) =>
@@ -84,7 +85,7 @@ export default function NotesScreen() {
     }
   }
 
-  async function deleteNote(id) {
+  async function deleteNote(id: string) {
     Alert.alert("Delete Note", "Are you sure you want to delete this note?", [
       {
         text: "Cancel",
@@ -95,7 +96,7 @@ export default function NotesScreen() {
         style: "destructive",
         onPress: async () => {
           const response = await noteService.deleteNote(id);
-          if (response?.error) {
+          if ("error" in response) {
             Alert.alert("Error", response.error);
           } else {
             setNotes((prev) => prev.filter((note) => note.$id !== id));

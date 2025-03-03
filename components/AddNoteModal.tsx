@@ -1,12 +1,20 @@
 import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native";
 
+interface AddNoteModalProps {
+  modalVisible: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  newNote: string;
+  setNewNote: React.Dispatch<React.SetStateAction<string>>;
+  addNote: () => Promise<void>;
+}
+
 export default function AddNoteModal({
   modalVisible,
   setModalVisible,
   newNote,
   setNewNote,
   addNote,
-}) {
+}: AddNoteModalProps) {
   return (
     <Modal
       visible={modalVisible}

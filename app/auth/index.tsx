@@ -11,7 +11,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleAuth() {
     if (!email.trim() || !password.trim()) {
@@ -32,7 +32,7 @@ export default function AuthScreen() {
       response = await login(email, password);
     }
 
-    if (response?.error) {
+    if ("error" in response) {
       Alert.alert("Error", response.error);
       return;
     }

@@ -9,7 +9,6 @@ import { useEffect } from "react";
 import { useRouter } from "expo-router";
 
 import { useAuth } from "@/contexts/authContext";
-import PostItImage from "@/assets/images/post-it.png";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -32,7 +31,7 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 justify-center items-center p-5 bg-[#f8f9fa]">
       <Image
-        source={PostItImage}
+        source={require("@/assets/images/post-it.png")}
         className="w-[100px] h-[100px] mb-5 rounded-[10px]"
       />
       <Text className="text-3xl font-bold mb-3 text-[#333]">

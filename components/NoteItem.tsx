@@ -1,8 +1,15 @@
+import { Note } from "@/types";
 import { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 
-export default function NoteItem({ note, onDelete, onEdit }) {
-  const inputRef = useRef(null);
+interface NoteItemProps {
+  note: Note;
+  onDelete: (id: string) => Promise<void>;
+  onEdit: (id: string, newText: string) => void;
+}
+
+export default function NoteItem({ note, onDelete, onEdit }: NoteItemProps) {
+  const inputRef = useRef<TextInput>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditingText] = useState(note.text);
 
@@ -33,7 +40,7 @@ export default function NoteItem({ note, onDelete, onEdit }) {
           <TouchableOpacity
             onPress={() => {
               handleSave();
-              inputRef.current.blur();
+              inputRef.current?.blur();
             }}
           >
             <Text className="text-lg mr-2.5 text-blue-500">💾</Text>

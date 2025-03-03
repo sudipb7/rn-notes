@@ -1,8 +1,15 @@
 import { FlatList, View } from "react-native";
 
+import { Note } from "@/types";
 import NoteItem from "./NoteItem";
 
-export default function NoteList({ notes, onDelete, onEdit }) {
+interface NoteListProps {
+  notes: Note[];
+  onDelete: (id: string) => Promise<void>;
+  onEdit: (id: string, newText: string) => void;
+}
+
+export default function NoteList({ notes, onDelete, onEdit }: NoteListProps) {
   return (
     <View>
       <FlatList
