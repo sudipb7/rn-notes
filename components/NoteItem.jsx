@@ -1,11 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 
 export default function NoteItem({ note, onDelete, onEdit }) {
   const inputRef = useRef(null);
@@ -21,11 +15,10 @@ export default function NoteItem({ note, onDelete, onEdit }) {
   }
 
   return (
-    <View style={styles.noteItem}>
+    <View className="flex-row justify-between bg-[#f5f5f5] p-4 my-2.5 rounded-md">
       {isEditing ? (
         <TextInput
           ref={inputRef}
-          style={styles.input}
           value={editedText}
           onChangeText={setEditingText}
           autoFocus
@@ -33,9 +26,9 @@ export default function NoteItem({ note, onDelete, onEdit }) {
           returnKeyType="done"
         />
       ) : (
-        <Text style={styles.noteText}>{note.text}</Text>
+        <Text className="text-lg">{note.text}</Text>
       )}
-      <View style={styles.actions}>
+      <View className="flex-row">
         {isEditing ? (
           <TouchableOpacity
             onPress={() => {
@@ -43,44 +36,17 @@ export default function NoteItem({ note, onDelete, onEdit }) {
               inputRef.current.blur();
             }}
           >
-            <Text style={styles.edit}>💾</Text>
+            <Text className="text-lg mr-2.5 text-blue-500">💾</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => setIsEditing(true)}>
-            <Text style={styles.delete}>✏️</Text>
+            <Text className="text-red-500 text-lg">✏️</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={() => onDelete(note.$id)}>
-          <Text style={styles.delete}>❌</Text>
+          <Text className="text-red-500 text-lg">❌</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  noteItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#f5f5f5",
-    padding: 15,
-    borderRadius: 5,
-    marginVertical: 5,
-  },
-  noteText: {
-    fontSize: 18,
-  },
-  delete: {
-    color: "red",
-    fontSize: 18,
-  },
-  input: {},
-  actions: {
-    flexDirection: "row",
-  },
-  edit: {
-    fontSize: 18,
-    marginRight: 10,
-    color: "blue",
-  },
-});

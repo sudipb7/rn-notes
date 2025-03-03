@@ -1,13 +1,12 @@
-import { useEffect } from "react";
-import { useRouter } from "expo-router";
 import {
   Text,
   View,
-  StyleSheet,
   Image,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import { useEffect } from "react";
+import { useRouter } from "expo-router";
 
 import { useAuth } from "@/contexts/authContext";
 import PostItImage from "@/assets/images/post-it.png";
@@ -24,70 +23,30 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centeredContainer}>
+      <View className="text-center items-center justify-center">
         <ActivityIndicator size="large" color="#007bff" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Image source={PostItImage} style={styles.image} />
-      <Text style={styles.title}>Welcome to Notes App</Text>
-      <Text style={styles.subTitle}>
+    <View className="flex-1 justify-center items-center p-5 bg-[#f8f9fa]">
+      <Image
+        source={PostItImage}
+        className="w-[100px] h-[100px] mb-5 rounded-[10px]"
+      />
+      <Text className="text-3xl font-bold mb-3 text-[#333]">
+        Welcome to Notes App
+      </Text>
+      <Text className="text-base text-[#666] mb-5 text-center">
         Capture your thoughts anytime, anywhere
       </Text>
       <TouchableOpacity
-        style={styles.button}
         onPress={() => router.push("/notes")}
+        className="bg-[#007bff] py-3 px-6 rounded-lg items-center"
       >
-        <Text style={styles.buttonText}>Get Started</Text>
+        <Text className="text-white text-lg font-bold">Get Started</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#f8f9fa",
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-    borderRadius: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
-  },
-  subTitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  centeredContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-  },
-});

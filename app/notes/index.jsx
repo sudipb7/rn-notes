@@ -1,6 +1,5 @@
 import {
   View,
-  StyleSheet,
   Text,
   TouchableOpacity,
   Alert,
@@ -107,14 +106,20 @@ export default function NotesScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 p-5 bg-white">
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
         <>
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          {error && (
+            <Text className="text-red-500 text-center mb-2.5 text-base">
+              {error}
+            </Text>
+          )}
           {notes.length === 0 ? (
-            <Text style={styles.noNoteText}>You have no notes</Text>
+            <Text className="text-center text-lg font-bold text-[#555] mt-4">
+              You have no notes
+            </Text>
           ) : (
             <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
           )}
@@ -122,10 +127,10 @@ export default function NotesScreen() {
       )}
 
       <TouchableOpacity
-        style={styles.addButton}
+        className="absolute inset-x-5 bottom-5 bg-[#007bff] p-4 rounded-lg items-center"
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.addButtonText}>+ Add Note</Text>
+        <Text className="text-white text-lg font-bold">Add a Note</Text>
       </TouchableOpacity>
 
       <AddNoteModal
@@ -138,39 +143,3 @@ export default function NotesScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  addButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  noNoteText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#555",
-    marginTop: 15,
-  },
-});

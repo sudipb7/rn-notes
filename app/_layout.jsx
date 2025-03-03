@@ -1,5 +1,6 @@
+import "./global.css";
 import { Stack } from "expo-router";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 
 import { AuthProvider, useAuth } from "@/contexts/authContext";
 
@@ -7,8 +8,11 @@ function HeaderLogOut() {
   const { user, logOut } = useAuth();
 
   return user ? (
-    <TouchableOpacity style={styles.logOutButton} onPress={logOut}>
-      <Text style={styles.logOutText}>LogOut</Text>
+    <TouchableOpacity
+      className="mr-4 py-1.5 px-3 bg-[#ff3b30] rounded-lg"
+      onPress={logOut}
+    >
+      <Text className="text-white text-base font-bold">LogOut</Text>
     </TouchableOpacity>
   ) : null;
 }
@@ -41,18 +45,3 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  logOutButton: {
-    marginRight: 15,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: "#ff3b30",
-    borderRadius: 8,
-  },
-  logOutText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});

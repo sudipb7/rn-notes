@@ -1,13 +1,6 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 
 import { useAuth } from "@/contexts/authContext";
 
@@ -48,13 +41,17 @@ export default function AuthScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>{isRegistering ? "Sign Up" : "Login"}</Text>
+    <View className="flex-1 items-center justify-center p-5 bg-[#f8f9fa]">
+      <Text className="text-3xl font-bold mb-5 text-[#333]">
+        {isRegistering ? "Sign Up" : "Login"}
+      </Text>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? (
+        <Text className="text-red-500 mb-3 text-base">{error}</Text>
+      ) : null}
 
       <TextInput
-        style={styles.input}
+        className="w-full p-3 border border-[#ddd] rounded-lg mb-3 bg-white text-base"
         placeholder="Email"
         placeholderTextColor="#aaa"
         value={email}
@@ -63,7 +60,7 @@ export default function AuthScreen() {
         keyboardType="email-address"
       />
       <TextInput
-        style={styles.input}
+        className="w-full p-3 border border-[#ddd] rounded-lg mb-3 bg-white text-base"
         placeholder="Password"
         placeholderTextColor="#aaa"
         value={password}
@@ -73,7 +70,7 @@ export default function AuthScreen() {
       />
       {isRegistering && (
         <TextInput
-          style={styles.input}
+          className="w-full p-3 border border-[#ddd] rounded-lg mb-3 bg-white text-base"
           placeholder="Confirm Password"
           placeholderTextColor="#aaa"
           value={confirmPassword}
@@ -83,14 +80,17 @@ export default function AuthScreen() {
         />
       )}
 
-      <TouchableOpacity style={styles.button} onPress={handleAuth}>
-        <Text style={styles.buttonText}>
+      <TouchableOpacity
+        onPress={handleAuth}
+        className="bg-[#007bff] py-3 rounded-lg w-full items-center mt-2.5"
+      >
+        <Text className="text-white text-lg font-bold">
           {isRegistering ? "Sign Up" : "Login"}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => setIsRegistering((prev) => !prev)}>
-        <Text style={styles.switchText}>
+        <Text className="mt-2.5 text-[#007bff] text-base">
           {isRegistering
             ? "Already have an account? Login"
             : "Don't have an account? Sign Up"}
@@ -99,52 +99,3 @@ export default function AuthScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#f8f9fa",
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
-  },
-  input: {
-    width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    marginBottom: 12,
-    backgroundColor: "#fff",
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 12,
-    borderRadius: 8,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  switchText: {
-    marginTop: 10,
-    color: "#007bff",
-    fontSize: 16,
-  },
-  error: {
-    color: "red",
-    marginBottom: 10,
-    fontSize: 16,
-  },
-});
