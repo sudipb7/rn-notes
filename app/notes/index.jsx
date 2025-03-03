@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,12 +6,17 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { useRouter } from "expo-router";
+import { useState, useEffect } from "react";
 
 import NoteList from "@/components/NoteList";
 import AddNoteModal from "@/components/AddNoteModal";
 import noteService from "@/services/noteService";
+import { useAuth } from "@/contexts/authContext";
 
 export default function NotesScreen() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [newNote, setNewNote] = useState("");
   const [notes, setNotes] = useState([]);
@@ -20,12 +24,20 @@ export default function NotesScreen() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    if (!authLoading && !user) {
+      router.replace("auth");
+    }
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (user) {
+      fetchNotes();
+    }
+  }, [user]);
 
   async function fetchNotes() {
     setLoading(true);
-    const response = await noteService.getNotes();
+    const response = await noteService.getNotes(user?.$id);
     if (response.error) {
       Alert.alert("Error", response.error);
       setError(response.error);
@@ -41,7 +53,7 @@ export default function NotesScreen() {
       return;
     }
 
-    const response = await noteService.addNote(newNote);
+    const response = await noteService.addNote(user.$id, newNote);
     if (response?.error) {
       Alert.alert("Error", response.error);
     } else {
@@ -101,7 +113,11 @@ export default function NotesScreen() {
       ) : (
         <>
           {error && <Text style={styles.errorText}>{error}</Text>}
-          <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
+          {notes.length === 0 ? (
+            <Text style={styles.noNoteText}>You have no notes</Text>
+          ) : (
+            <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
+          )}
         </>
       )}
 
@@ -149,5 +165,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
     fontSize: 16,
+  },
+  noNoteText: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#555",
+    marginTop: 15,
   },
 });
