@@ -1,9 +1,59 @@
-import { View, Text, StyleSheet } from "react-native";
+import { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 
-export default function NoteItem({ note }) {
+export default function NoteItem({ note, onDelete, onEdit }) {
+  const inputRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditingText] = useState(note.text);
+
+  async function handleSave() {
+    if (editedText.trim() === "") {
+      return;
+    }
+    onEdit(note.$id, editedText);
+    setIsEditing(false);
+  }
+
   return (
     <View style={styles.noteItem}>
-      <Text style={styles.noteText}>{note.text}</Text>
+      {isEditing ? (
+        <TextInput
+          ref={inputRef}
+          style={styles.input}
+          value={editedText}
+          onChangeText={setEditingText}
+          autoFocus
+          onSubmitEditing={handleSave}
+          returnKeyType="done"
+        />
+      ) : (
+        <Text style={styles.noteText}>{note.text}</Text>
+      )}
+      <View style={styles.actions}>
+        {isEditing ? (
+          <TouchableOpacity
+            onPress={() => {
+              handleSave();
+              inputRef.current.blur();
+            }}
+          >
+            <Text style={styles.edit}>💾</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            <Text style={styles.delete}>✏️</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity onPress={() => onDelete(note.$id)}>
+          <Text style={styles.delete}>❌</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -19,5 +69,18 @@ const styles = StyleSheet.create({
   },
   noteText: {
     fontSize: 18,
+  },
+  delete: {
+    color: "red",
+    fontSize: 18,
+  },
+  input: {},
+  actions: {
+    flexDirection: "row",
+  },
+  edit: {
+    fontSize: 18,
+    marginRight: 10,
+    color: "blue",
   },
 });
