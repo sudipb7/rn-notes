@@ -25,7 +25,7 @@ export default function NotesScreen() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace("/auth");
+      router.replace("/");
     }
   }, [user, authLoading]);
 
