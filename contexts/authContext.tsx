@@ -14,15 +14,19 @@ type AuthContextType = {
     email: string,
     password: string
   ) => Promise<{ success: boolean } | { error: string }>;
+  onboardUser: (
+    name: string
+  ) => Promise<{ success: boolean } | { error: string }>;
   logOut: () => Promise<void>;
 };
 
 const defaultContextValue: AuthContextType = {
   user: null,
   loading: true,
+  logOut: async () => {},
   login: async () => ({ error: "Not implemented" }),
   register: async () => ({ error: "Not implemented" }),
-  logOut: async () => {},
+  onboardUser: async () => ({ error: "Not implemented" }),
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
@@ -54,6 +58,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { success: true };
   }
 
+  async function onboardUser(name: string) {
+    const response = await authService.updateName(name);
+    if ("error" in response) {
+      return response;
+    }
+
+    await checkUser();
+    return { success: true };
+  }
+
   async function register(email: string, password: string) {
     const response = await authService.register(email, password);
     if ("error" in response) {
@@ -77,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logOut,
+        onboardUser,
       }}
     >
       {children}

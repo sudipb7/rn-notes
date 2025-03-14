@@ -102,11 +102,17 @@ export default function AuthBottomSheet({
     setSnapPoints(initialSnapPoints);
   };
 
+  function handleSheetClose() {
+    reset();
+    Keyboard.dismiss();
+  }
+
   return (
     <BottomSheet
-      ref={sheetRef}
       index={-1}
+      ref={sheetRef}
       snapPoints={snapPoints}
+      onClose={handleSheetClose}
       enableDynamicSizing={false}
       keyboardBehavior={Platform.OS === "ios" ? "extend" : "interactive"}
       keyboardBlurBehavior="restore"
@@ -128,7 +134,9 @@ export default function AuthBottomSheet({
         shadowRadius: 3.84,
         elevation: 5,
       }}
-      handleIndicatorStyle={{ backgroundColor: "#ccc" }}
+      handleIndicatorStyle={{
+        backgroundColor: snapPoints.includes("100%") ? "white" : "#ccc",
+      }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} className="flex-1">
         <BottomSheetView
@@ -164,6 +172,7 @@ export default function AuthBottomSheet({
                       className="w-full text-lg py-3 px-5 rounded-full self-stretch border border-border bg-background focus:border-brand-strong"
                       inputMode="email"
                       keyboardType="email-address"
+                      autoComplete="email"
                       autoCapitalize="none"
                       value={value}
                       style={{ lineHeight: undefined }}
@@ -205,6 +214,7 @@ export default function AuthBottomSheet({
                       }}
                       onFocus={handleInputFocus}
                       aria-disabled={isSubmitting}
+                      autoComplete="password"
                     />
                   )}
                 />

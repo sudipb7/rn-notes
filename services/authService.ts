@@ -1,4 +1,4 @@
-import { ID, Models } from "react-native-appwrite";
+import { ID } from "react-native-appwrite";
 
 import { User } from "@/types";
 import { account } from "./appwrite";
@@ -15,6 +15,7 @@ const authService = {
         $createdAt: response.$createdAt,
         $updatedAt: response.$updatedAt,
         email,
+        name: response.name,
       };
     } catch (error: any) {
       console.error("Error registering user -", error);
@@ -24,7 +25,7 @@ const authService = {
   async login(
     email: string,
     password: string
-  ): Promise<User | { error: string }> {
+  ): Promise<Omit<User, "name"> | { error: string }> {
     try {
       const response = await account.createEmailPasswordSession(
         email,
@@ -41,6 +42,21 @@ const authService = {
       return { error: error.message || "Login failed" };
     }
   },
+  async updateName(name: string): Promise<User | { error: string }> {
+    try {
+      const user = await account.updateName(name);
+      return {
+        $id: user.$id,
+        $createdAt: user.$createdAt,
+        $updatedAt: user.$updatedAt,
+        email: user.email,
+        name,
+      };
+    } catch (error: any) {
+      console.error("Error onboarding user -", error);
+      return { error: error.message || "Onboarding failed" };
+    }
+  },
   async getUser(): Promise<User | null> {
     try {
       const user = await account.get();
@@ -49,6 +65,7 @@ const authService = {
         $createdAt: user.$createdAt,
         $updatedAt: user.$updatedAt,
         email: user.email,
+        name: user.name,
       };
     } catch (error) {
       return null;

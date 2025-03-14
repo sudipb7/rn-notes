@@ -4,19 +4,19 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
 
 import { Note } from "@/types";
 import { useAuth } from "@/contexts/authContext";
-import NoteList from "@/components/NoteList";
 import noteService from "@/services/noteService";
-import AddNoteModal from "@/components/AddNoteModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotesScreen() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logOut } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [newNote, setNewNote] = useState("");
   const [notes, setNotes] = useState<Note[]>([]);
@@ -26,6 +26,9 @@ export default function NotesScreen() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/");
+    }
+    if (!user?.name) {
+      router.replace("/onboarding");
     }
   }, [user, authLoading]);
 
@@ -107,7 +110,7 @@ export default function NotesScreen() {
   }
 
   return (
-    <View className="flex-1 p-5 bg-white">
+    <SafeAreaView className="flex-1 p-5 bg-background py-12 px-6">
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
@@ -122,25 +125,12 @@ export default function NotesScreen() {
               You have no notes
             </Text>
           ) : (
-            <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
+            <></>
           )}
         </>
       )}
 
-      <TouchableOpacity
-        className="absolute inset-x-5 bottom-5 bg-[#007bff] p-4 rounded-lg items-center"
-        onPress={() => setModalVisible(true)}
-      >
-        <Text className="text-white text-lg font-bold">Add a Note</Text>
-      </TouchableOpacity>
-
-      <AddNoteModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        newNote={newNote}
-        setNewNote={setNewNote}
-        addNote={addNote}
-      />
-    </View>
+      <Button title="Log Out" onPress={logOut} />
+    </SafeAreaView>
   );
 }
