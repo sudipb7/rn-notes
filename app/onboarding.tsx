@@ -14,7 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAuth } from "@/contexts/authContext";
+import { useAuth } from "@/contexts/auth";
+import { ScreenLoader } from "@/components/screen-loader";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -22,7 +23,7 @@ const schema = z.object({
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { user, loading: authLoading, onboardUser } = useAuth();
+  const { onboardUser, isLoading, user } = useAuth();
 
   const {
     reset,
@@ -52,20 +53,25 @@ export default function OnboardingScreen() {
   }
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!user) {
       router.replace("/");
     }
-    if (user?.name) {
+
+    if (user && user.name) {
       router.replace("/notes");
     }
-  }, [user, authLoading]);
+  }, [isLoading, user]);
 
-  if (authLoading) {
-    return <SafeAreaView className="flex-1 bg-background" />;
+  if (isLoading) {
+    return <ScreenLoader />;
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background-secondary py-12 px-6">
+    <SafeAreaView className="flex-1 bg-background py-12 px-6">
       <View className="w-full flex-1 items-center justify-center">
         <View className="rounded-2xl bg-brand justify-center items-center size-16">
           <Feather name="book-open" size={32} color="#fff" />
@@ -86,7 +92,7 @@ export default function OnboardingScreen() {
               control={control}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextInput
-                  className="w-full text-lg py-3 px-5 rounded-full self-stretch border border-border bg-background focus:border-brand-strong"
+                  className="w-full text-lg py-3 px-5 rounded-full self-stretch border border-border bg-background-secondary focus:border-brand-strong"
                   inputMode="text"
                   autoComplete="name"
                   autoCapitalize="words"

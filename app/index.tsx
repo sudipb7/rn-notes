@@ -3,14 +3,15 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import Feather from "@expo/vector-icons/Feather";
 import { Text, View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef, useCallback, useState, useMemo } from "react";
+import { useRef, useCallback, useState, useMemo, useEffect } from "react";
 
-import { useAuth } from "@/contexts/authContext";
-import AuthBottomSheet from "@/components/AuthBottomSheet";
+import { useAuth } from "@/contexts/auth";
+import { ScreenLoader } from "@/components/screen-loader";
+import { AuthBottomSheet } from "@/components/auth-bottom-sheet";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["60%"], []);
   const [type, setType] = useState<"register" | "login">("register");
@@ -24,13 +25,21 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (isLoading) {
+      return;
+    }
+
+    if (user && user.name) {
       router.replace("/notes");
     }
-  }, [user, loading]);
 
-  if (loading) {
-    return <SafeAreaView className="flex-1 bg-background" />;
+    if (user && !user.name) {
+      router.replace("/onboarding");
+    }
+  }, [user, isLoading]);
+
+  if (isLoading) {
+    return <ScreenLoader />;
   }
 
   return (

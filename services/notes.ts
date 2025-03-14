@@ -2,12 +2,12 @@ import { ID, Query } from "react-native-appwrite";
 
 import { Note } from "@/types";
 import { config } from "./appwrite";
-import databaseService from "./databaseService";
+import databaseService from "./database";
 
 const dbId = config.db;
 const colId = config.col.notes;
 
-const noteService = {
+const notesService = {
   async getNotes(
     userId: string
   ): Promise<{ data: Note[] } | { error: string }> {
@@ -20,10 +20,10 @@ const noteService = {
     }
 
     try {
-      const response = await databaseService.listDocuments(dbId, colId, [
+      const response = await databaseService.listDocuments<Note>(dbId, colId, [
         Query.equal("userId", userId),
       ]);
-      if (response.error) {
+      if ("error" in response) {
         return { error: response.error };
       }
 
@@ -32,7 +32,8 @@ const noteService = {
           $id: d.$id,
           $createdAt: d.$createdAt,
           $updatedAt: d.$updatedAt,
-          text: d.text,
+          title: d.title,
+          content: d.content,
           userId: d.userId,
         })) || ([] as Note[]);
 
@@ -43,19 +44,16 @@ const noteService = {
     }
   },
   async addNote(
-    userId: string,
-    text: string
+    data: Pick<Note, "title" | "content" | "userId">
   ): Promise<{ data: Note } | { error: string }> {
-    if (!text) {
-      return { error: "Note text cannot be empty" };
+    if (!data.title) {
+      return { error: "Note title cannot be empty" };
     }
 
-    const data = { text, userId, createdAt: new Date().toISOString() };
-
-    const response = await databaseService.createDocument(
+    const response = await databaseService.createDocument<Note>(
       dbId,
       colId,
-      data,
+      { ...data, createdAt: new Date().toISOString() },
       ID.unique()
     );
     if ("error" in response) {
@@ -67,18 +65,27 @@ const noteService = {
         $id: response.$id,
         $createdAt: response.$createdAt,
         $updatedAt: response.$updatedAt,
-        text,
-        userId,
+        title: response.title,
+        content: response.content,
+        userId: response.userId,
       },
     };
   },
   async updateNote(
     id: string,
-    text: string
+    data: Pick<Note, "title" | "content">
   ): Promise<{ data: Note } | { error: string }> {
-    const response = await databaseService.updateDocument(dbId, colId, id, {
-      text,
-    });
+    if (!data.title) {
+      return { error: "Note title cannot be empty" };
+    }
+    const response = await databaseService.updateDocument<Note>(
+      dbId,
+      colId,
+      id,
+      {
+        ...data,
+      }
+    );
     if ("error" in response) {
       return { error: response.error };
     }
@@ -89,7 +96,8 @@ const noteService = {
         $createdAt: response.$createdAt,
         $updatedAt: response.$updatedAt,
         userId: response.userId,
-        text,
+        title: response.title,
+        content: response.content,
       },
     };
   },
@@ -103,4 +111,4 @@ const noteService = {
   },
 };
 
-export default noteService;
+export default notesService;

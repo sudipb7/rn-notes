@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { User } from "@/types";
-import authService from "@/services/authService";
+import authService from "@/services/auth";
 
 type AuthContextType = {
   user: User | null;
-  loading: boolean;
+  isLoading: boolean;
   login: (
     email: string,
     password: string
@@ -22,7 +22,7 @@ type AuthContextType = {
 
 const defaultContextValue: AuthContextType = {
   user: null,
-  loading: true,
+  isLoading: true,
   logOut: async () => {},
   login: async () => ({ error: "Not implemented" }),
   register: async () => ({ error: "Not implemented" }),
@@ -33,19 +33,19 @@ const AuthContext = createContext<AuthContextType>(defaultContextValue);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkUser();
   }, []);
 
   async function checkUser() {
-    setLoading(true);
+    setIsLoading(true);
 
     const user = await authService.getUser();
     setUser(user);
 
-    setLoading(false);
+    setIsLoading(false);
   }
 
   async function login(email: string, password: string) {
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        loading,
+        isLoading,
         login,
         register,
         logOut,
@@ -101,5 +101,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
   return context;
 }

@@ -17,9 +17,10 @@ import BottomSheet, {
 import { useCallback, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { Easing } from "react-native-reanimated";
-import { useAuth } from "@/contexts/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
+
+import { useAuth } from "@/contexts/auth";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -35,7 +36,7 @@ interface AuthBottomSheetProps {
   handleSheetChange: (index: number) => void;
 }
 
-export default function AuthBottomSheet({
+export function AuthBottomSheet({
   type,
   sheetRef,
   snapPoints: initialSnapPoints,
